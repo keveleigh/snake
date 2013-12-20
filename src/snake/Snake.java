@@ -16,12 +16,14 @@ public class Snake {
 	private int dir;
 	private int length;
 	private ArrayList<Point> path;
+	private boolean dead;
 
 	public Snake() {
-		pos = new Point(49, 49);
+		pos = new Point(GameBoard.side/2 - 1, GameBoard.side/2 - 1);
 		dir = 0;
 		length = 1;
 		path = new ArrayList<Point>();
+		dead = false;
 		path.add((Point)pos.clone());
 	}
 
@@ -31,6 +33,11 @@ public class Snake {
 
 	public Point getPos() {
 		return pos;
+	}
+	
+	public int getLength()
+	{
+		return length;
 	}
 
 	public void move() {
@@ -49,20 +56,25 @@ public class Snake {
 			break;
 		}
 		if (pos.x < 0) {
-			pos.x = 99;
-		} else if (pos.x > 99) {
+			pos.x = GameBoard.side - 1;
+		} else if (pos.x > GameBoard.side - 1) {
 			pos.x = 0;
 		}
 		if (pos.y < 0) {
-			pos.y = 99;
-		} else if (pos.y > 99) {
+			pos.y = GameBoard.side - 1;
+		} else if (pos.y > GameBoard.side - 1) {
 			pos.y = 0;
 		}
-		path.add((Point)pos.clone());
-		if(path.size() > length)
+		
+		if(path.size() >= length)
 		{
 			path.remove(0);
 		}
+		if(pathContains(pos))
+		{
+			dead = true;
+		}
+		path.add((Point)pos.clone());
 	}
 
 	public void setDirection(String newDir) {
@@ -93,10 +105,15 @@ public class Snake {
 	public void eat() {
 		length++;
 	}
+	
+	public boolean isDead()
+	{
+		return dead;
+	}
 
 	public void draw(Graphics g) {
 		for (Point p : path) {
-			g.fillRect(p.x * 5, p.y * 5, 5, 5);
+			g.fillRect(p.x * (GameBoard.width / GameBoard.side), p.y * (GameBoard.width / GameBoard.side), (GameBoard.width / GameBoard.side), (GameBoard.width / GameBoard.side));
 		}
 	}
 }

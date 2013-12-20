@@ -25,14 +25,18 @@ public class GameBoard extends JPanel {
 	private Snake snake;
 	private Point food;
 	private Random rand;
+	private int delay;
+	public static final int side = 50;
+	public static final int width = 500;
 
 	public GameBoard() {
 		rand = new Random();
-		timer = new Timer(100, new TimerListener());
+		delay = 100;
+		timer = new Timer(delay, new TimerListener());
 		timer.setRepeats(true);
 		snake = new Snake();
-		food = new Point(rand.nextInt(100), rand.nextInt(100));
-		setPreferredSize(new Dimension(500, 500));
+		food = new Point(rand.nextInt(side), rand.nextInt(side));
+		setPreferredSize(new Dimension(width, width));
 		addKeyListener(new PlayerListener());
 		setFocusable(true);
 	}
@@ -61,10 +65,17 @@ public class GameBoard extends JPanel {
 	public void step() {
 		snake.move();
 		repaint();
-		if(food.equals(snake.getPos()))
-		{
+		if (snake.isDead()) {
+			reset();
+		}
+		if (food.equals(snake.getPos())) {
 			snake.eat();
 			generateNewFood();
+			if(snake.getLength()%3 == 0 && delay > 25)
+			{
+				delay--;
+				timer.setDelay(delay);
+			}
 		}
 	}
 
@@ -75,7 +86,7 @@ public class GameBoard extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawRect(food.x * 5, food.y * 5, 4, 4);
+		g.drawRect(food.x * (this.getWidth() / side), food.y * (width / side), (width / side) - 1, (width / side) - 1);
 		snake.draw(g);
 	}
 
@@ -89,17 +100,16 @@ public class GameBoard extends JPanel {
 	public void reset() {
 		timer.stop();
 		snake = new Snake();
-		food = new Point();
+		food = new Point(rand.nextInt(side), rand.nextInt(side));
 		repaint();
 	}
-	
-	public void generateNewFood()
-	{
-		int newX = rand.nextInt(100);
-		int newY = rand.nextInt(100);
-		while(snake.pathContains(new Point(newX, newY))){
-			newX = rand.nextInt(100);
-			newY = rand.nextInt(100);
+
+	public void generateNewFood() {
+		int newX = rand.nextInt(side);
+		int newY = rand.nextInt(side);
+		while (snake.pathContains(new Point(newX, newY))) {
+			newX = rand.nextInt(side);
+			newY = rand.nextInt(side);
 		}
 		food = new Point(newX, newY);
 	}
