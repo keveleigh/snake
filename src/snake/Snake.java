@@ -1,52 +1,67 @@
 package snake;
 
 import java.awt.Graphics;
-import java.util.Random;
+import java.awt.Point;
+import java.util.ArrayList;
 
 /**
  * A SNAKE!
  * 
  * @author Kurtis Eveleigh
- * @version 1.0.0
+ * @version 0.0.9
  */
 
 public class Snake {
-	int x;
-	int y;
-	int length;
-	int dir;
-	Random rand;
+	private Point pos;
+	private int dir;
+	private int length;
+	private ArrayList<Point> path;
 
 	public Snake() {
-		x = 49;
-		y = 49;
+		pos = new Point(49, 49);
 		dir = 0;
+		length = 1;
+		path = new ArrayList<Point>();
+		path.add((Point)pos.clone());
+	}
+
+	public boolean pathContains(Point p) {
+		return path.contains(p);
+	}
+
+	public Point getPos() {
+		return pos;
 	}
 
 	public void move() {
 		switch (dir) {
 		case 0:
-			y--;
+			pos.y--;
 			break;
 		case 1:
-			x++;
+			pos.x++;
 			break;
 		case 2:
-			y++;
+			pos.y++;
 			break;
 		case 3:
-			x--;
+			pos.x--;
 			break;
 		}
-		if (x < 0) {
-			x = 99;
-		} else if (x > 99) {
-			x = 0;
+		if (pos.x < 0) {
+			pos.x = 99;
+		} else if (pos.x > 99) {
+			pos.x = 0;
 		}
-		if (y < 0) {
-			y = 99;
-		} else if (y > 99) {
-			y = 0;
+		if (pos.y < 0) {
+			pos.y = 99;
+		} else if (pos.y > 99) {
+			pos.y = 0;
+		}
+		path.add((Point)pos.clone());
+		if(path.size() > length)
+		{
+			path.remove(0);
 		}
 	}
 
@@ -75,7 +90,13 @@ public class Snake {
 		}
 	}
 
+	public void eat() {
+		length++;
+	}
+
 	public void draw(Graphics g) {
-		g.drawRect(x * 5, y * 5, 5, 5);
+		for (Point p : path) {
+			g.fillRect(p.x * 5, p.y * 5, 5, 5);
+		}
 	}
 }

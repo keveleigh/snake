@@ -16,7 +16,7 @@ import javax.swing.Timer;
  * Displays the snake game board in a JPanel.
  * 
  * @author Kurtis Eveleigh
- * @version 1.0.0
+ * @version 0.0.9
  */
 
 @SuppressWarnings("serial")
@@ -28,7 +28,7 @@ public class GameBoard extends JPanel {
 
 	public GameBoard() {
 		rand = new Random();
-		timer = new Timer(150, new TimerListener());
+		timer = new Timer(100, new TimerListener());
 		timer.setRepeats(true);
 		snake = new Snake();
 		food = new Point(rand.nextInt(100), rand.nextInt(100));
@@ -41,7 +41,7 @@ public class GameBoard extends JPanel {
 		return timer.isRunning();
 	}
 
-	public Boolean flipTimer() {
+	public boolean flipTimer() {
 		if (timer.isRunning()) {
 			timer.stop();
 		} else {
@@ -61,6 +61,11 @@ public class GameBoard extends JPanel {
 	public void step() {
 		snake.move();
 		repaint();
+		if(food.equals(snake.getPos()))
+		{
+			snake.eat();
+			generateNewFood();
+		}
 	}
 
 	public void changeTimerSpeed(int newSpeed) {
@@ -70,7 +75,7 @@ public class GameBoard extends JPanel {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.fillRect(food.x * 5, food.y * 5, 5, 5);
+		g.drawRect(food.x * 5, food.y * 5, 4, 4);
 		snake.draw(g);
 	}
 
@@ -86,6 +91,17 @@ public class GameBoard extends JPanel {
 		snake = new Snake();
 		food = new Point();
 		repaint();
+	}
+	
+	public void generateNewFood()
+	{
+		int newX = rand.nextInt(100);
+		int newY = rand.nextInt(100);
+		while(snake.pathContains(new Point(newX, newY))){
+			newX = rand.nextInt(100);
+			newY = rand.nextInt(100);
+		}
+		food = new Point(newX, newY);
 	}
 
 	private class PlayerListener implements KeyListener {
